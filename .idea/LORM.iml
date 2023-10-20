@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="Go" enabled="true">
+    <buildTags>
+      <option name="customFlags">
+        <array>
+          <option value="v1" />
+          <option value="v2" />
+          <option value="v3" />
+          <option value="v4" />
+          <option value="v5" />
+          <option value="v6" />
+          <option value="v7" />
+          <option value="v8" />
+          <option value="v9" />
+          <option value="v10" />
+          <option value="v11" />
+          <option value="v12" />
+          <option value="v13" />
+          <option value="v14" />
+          <option value="v15" />
+          <option value="v16" />
+          <option value="e2e" />
+          <option value="del" />
+        </array>
+      </option>
+    </buildTags>
+  </component>
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
