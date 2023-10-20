@@ -79,20 +79,20 @@ func TestSelector_Having(t *testing.T) {
 			// 单个条件
 			name: "single",
 			q: NewSelector[TestModel](db).GroupBy(C("Age")).
-				Having(C("FirstName").EQ("Deng")),
+				Having(C("FirstName").EQ("LiSa")),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING `first_name` = ?;",
-				Args: []any{"Deng"},
+				Args: []any{"LiSa"},
 			},
 		},
 		{
 			// 多个条件
 			name: "multiple",
 			q: NewSelector[TestModel](db).GroupBy(C("Age")).
-				Having(C("FirstName").EQ("Deng"), C("LastName").EQ("Ming")),
+				Having(C("FirstName").EQ("LiSa"), C("LastName").EQ("Lily")),
 			wantQuery: &Query{
 				SQL:  "SELECT * FROM `test_model` GROUP BY `age` HAVING (`first_name` = ?) AND (`last_name` = ?);",
-				Args: []any{"Deng", "Ming"},
+				Args: []any{"LiSa", "Lily"},
 			},
 		},
 		{
@@ -326,7 +326,7 @@ func TestSelector_Get(t *testing.T) {
 			query:   "SELECT .*",
 			mockRows: func() *sqlmock.Rows {
 				res := sqlmock.NewRows([]string{"id", "first_name", "age", "last_name", "extra_column"})
-				res.AddRow([]byte("1"), []byte("Da"), []byte("18"), []byte("Ming"), []byte("nothing"))
+				res.AddRow([]byte("1"), []byte("Da"), []byte("18"), []byte("Lily"), []byte("nothing"))
 				return res
 			}(),
 		},
@@ -335,14 +335,14 @@ func TestSelector_Get(t *testing.T) {
 			query: "SELECT .*",
 			mockRows: func() *sqlmock.Rows {
 				res := sqlmock.NewRows([]string{"id", "first_name", "age", "last_name"})
-				res.AddRow([]byte("1"), []byte("Da"), []byte("18"), []byte("Ming"))
+				res.AddRow([]byte("1"), []byte("Da"), []byte("18"), []byte("Lily"))
 				return res
 			}(),
 			wantRes: &TestModel{
 				Id:        1,
 				FirstName: "Da",
 				Age:       18,
-				LastName:  &sql.NullString{String: "Ming", Valid: true},
+				LastName:  &sql.NullString{String: "Lily", Valid: true},
 			},
 		},
 
@@ -391,7 +391,7 @@ func BenchmarkQuerier_Get(b *testing.B) {
 	}
 
 	res, err := db.db.Exec("INSERT INTO `test_model`(`id`,`first_name`,`age`,`last_name`)"+
-		"VALUES (?,?,?,?)", 12, "Deng", 18, "Ming")
+		"VALUES (?,?,?,?)", 12, "LiSa", 18, "Lily")
 
 	if err != nil {
 		b.Fatal(err)
