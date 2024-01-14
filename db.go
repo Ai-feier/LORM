@@ -48,12 +48,14 @@ func DBWithDialect(dialect Dialect) DBOption {
 	}
 }
 
+// DBWithRegistry 更换数据中心实现
 func DBWithRegistry(r model.Registry) DBOption {
 	return func(db *DB) {
 		db.r = r
 	}
 }
 
+// DBUseReflectValuer 更改数据返回结果实现
 func DBUseReflectValuer() DBOption {
 	return func(db *DB) {
 		db.valCreator = valuer.NewReflectValue

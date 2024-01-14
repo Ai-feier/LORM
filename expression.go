@@ -1,5 +1,6 @@
 package LORM
 
+// RawExpr 原生 sql 语句
 type RawExpr struct {
 	raw  string
 	args []any
@@ -25,6 +26,7 @@ func Raw(expr string, args ...interface{}) RawExpr {
 	}
 }
 
+// binaryExpr 带有关系的表达式
 type binaryExpr struct {
 	left  Expression
 	op    op

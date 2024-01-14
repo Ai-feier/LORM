@@ -28,12 +28,14 @@ func (b *builder) buildColumn(fd string) error {
 	return nil
 }
 
+// 构造方言的quote
 func (b *builder) quote(name string) {
 	b.sb.WriteByte(b.quoter)
 	b.sb.WriteString(name)
 	b.sb.WriteByte(b.quoter)
 }
 
+// 构造原生表达式
 func (b *builder) raw(r RawExpr) {
 	b.sb.WriteString(r.raw)
 	if len(r.args) != 0 {
@@ -41,6 +43,7 @@ func (b *builder) raw(r RawExpr) {
 	}
 }
 
+// 构造 sql 语句参数
 func (b *builder) addArgs(args ...any) {
 	if b.args == nil {
 		// 很少有查询能够超过八个参数
@@ -50,6 +53,7 @@ func (b *builder) addArgs(args ...any) {
 	b.args = append(b.args, args...)
 }
 
+// 构造条件表达式
 func (b *builder) buildPredicates(ps []Predicate) error {
 	p := ps[0]
 	for i := 1; i < len(ps); i++ {
@@ -58,6 +62,7 @@ func (b *builder) buildPredicates(ps []Predicate) error {
 	return b.buildExpression(p)
 }
 
+// 构造表达式
 func (b *builder) buildExpression(e Expression) error {
 	if e == nil {
 		return nil
@@ -87,6 +92,7 @@ func (b *builder) buildExpression(e Expression) error {
 	return nil
 }
 
+// 构造二分表达式
 func (b *builder) buildBinaryExpr(e binaryExpr) error {
 	err := b.buildSubExpr(e.left)
 	if err != nil {
@@ -103,6 +109,7 @@ func (b *builder) buildBinaryExpr(e binaryExpr) error {
 	return nil
 }
 
+// 构造二分表达式的右半部分
 func (b *builder) buildSubExpr(subExpr Expression) error {
 	switch sub := subExpr.(type) {
 	case MathExpr:
@@ -131,6 +138,7 @@ func (b *builder) buildSubExpr(subExpr Expression) error {
 	return nil
 }
 
+// 构造 Aggregate 表达式
 func (b *builder) buildAggregate(a Aggregate, useAlias bool) error {
 	b.sb.WriteString(a.fn)
 	b.sb.WriteByte('(')
@@ -145,6 +153,7 @@ func (b *builder) buildAggregate(a Aggregate, useAlias bool) error {
 	return nil
 }
 
+// 构造 As 别名
 func (b *builder) buildAs(alias string) {
 	if alias != "" {
 		b.sb.WriteString(" AS ")

@@ -19,6 +19,7 @@ type Selector[T any] struct {
 	offset  int
 }
 
+// Select 选择要查询的列
 func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
 	s.columns = cols
 	return s
@@ -30,6 +31,7 @@ func (s *Selector[T]) From(tbl string) *Selector[T] {
 	return s
 }
 
+// Build 构造 sql 查询语句, 底层调用 database.sql 查询数据库
 func (s *Selector[T]) Build() (*Query, error) {
 	var (
 		t   T
@@ -217,6 +219,7 @@ func (s *Selector[T]) GetMulti(ctx context.Context) (res []*T, err error) {
 	return
 }
 
+// NewSelector 构造 Selector
 func NewSelector[T any](db *DB) *Selector[T] {
 	return &Selector[T]{
 		builder: builder{
@@ -227,6 +230,7 @@ func NewSelector[T any](db *DB) *Selector[T] {
 	}
 }
 
+// Selectable select 语句中 colume, rawexpr, aggregate 的抽象
 type Selectable interface {
 	selectable()
 }
