@@ -1,5 +1,9 @@
 package LORM
 
+import (
+	"context"
+)
+
 type Deleter[T any] struct {
 	builder
 	tableName string
@@ -55,4 +59,13 @@ func (d *Deleter[T]) From(table string) *Deleter[T] {
 func (d *Deleter[T]) Where(predicates ...Predicate) *Deleter[T] {
 	d.where = predicates
 	return d
+}
+
+func (d *Deleter[T]) Exec(ctx context.Context) Result {
+	query, err := d.Build()
+	if err != nil {
+		return Result{err: err}
+	}
+	res, err := d.db.db.ExecContext(ctx, query.SQL, d.args...)
+	return Result{res: res, err: err}
 }
