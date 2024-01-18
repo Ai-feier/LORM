@@ -39,12 +39,39 @@ type Inserter[T any] struct {
 }
 
 func (i *Inserter[T]) Exec(ctx context.Context) Result {
+	//q, err := i.Build()
+	//if err != nil {
+	//	return Result{err: err}
+	//}
+	//res, err := i.db.execContext(ctx, q.SQL, q.Args...)
+	//return Result{res: res, err: err}
+
+
+	handler := i.execHandler
+	mdls := i.db.mdls
+	for j:=len(mdls)-1;j>=0;j-- {
+		handler = mdls[j](handler)
+	}
+	qc := &QueryContext{
+		Builder: i,
+		Type: "INSERT",
+	}
+	qr := handler(ctx, qc)
+	
+	return qr.Result.(Result)
+}
+
+func (i *Inserter[T]) execHandler(ctx context.Context, qc *QueryContext) *QueryResult {
 	q, err := i.Build()
 	if err != nil {
-		return Result{err: err}
+		return &QueryResult{
+			Result: Result{err: err},
+		}
 	}
-	res, err := i.db.db.ExecContext(ctx, q.SQL, q.Args...)
-	return Result{res: res, err: err}
+	res, err := i.db.execContext(ctx, q.SQL, q.Args...)
+	return &QueryResult{
+		Result: Result{res: res, err: err},
+	}
 }
 
 func NewInserter[T any](db *DB) *Inserter[T] {

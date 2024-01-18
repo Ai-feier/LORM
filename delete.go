@@ -66,6 +66,6 @@ func (d *Deleter[T]) Exec(ctx context.Context) Result {
 	if err != nil {
 		return Result{err: err}
 	}
-	res, err := d.db.db.ExecContext(ctx, query.SQL, d.args...)
+	res, err := d.db.execContext(ctx, query.SQL, d.args...)
 	return Result{res: res, err: err}
 }
