@@ -78,7 +78,7 @@ func (u *Updater[T]) Exec(ctx context.Context) Result {
 	if err != nil {
 		return Result{err: err}
 	}
-	res, err := u.db.db.ExecContext(ctx, q.SQL, q.Args...)
+	res, err := u.db.execContext(ctx, q.SQL, q.Args...)
 	return Result{res: res, err: err}
 }
 

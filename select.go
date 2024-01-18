@@ -165,59 +165,175 @@ func (s *Selector[T]) Limit(limit int) *Selector[T] {
 }
 
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
-	q, err := s.Build()
+	//q, err := s.Build()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//// s.db 是我们定义的 DB
+	//// s.db.db 则是 sql.DB
+	//// 使用 QueryContext，从而和 GetMulti 能够复用处理结果集的代码
+	//rows, err := s.db.queryContext(ctx, q.SQL, q.Args...)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//if !rows.Next() {
+	//	return nil, ErrNoRows
+	//}
+	//
+	//tp := new(T)
+	//meta, err := s.db.r.Get(tp)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//val := s.db.valCreator(tp, meta)
+	//err = val.SetColumns(rows)
+	//return tp, err
+
+	handler := s.getHandler
+	// 套上 midddleware
+	mdls := s.db.mdls
+	for i:=len(mdls)-1;i>=0;i-- {
+		handler = mdls[i](handler)
+	}
+	qc := &QueryContext{
+		Builder: s,
+		Type: "SELECT",
+	}
+	res := handler(ctx, qc)
+	if res.Result != nil {
+		return res.Result.(*T), res.Err
+	}
+	return nil, res.Err
+}
+
+var _ HandleFunc = (&Selector[any]{}).getHandler
+
+// 将 get 调用作为 middleware 最后一级调用
+func (s *Selector[T]) getHandler(ctx context.Context, qc *QueryContext) *QueryResult {
+	q, err := qc.Builder.Build()
 	if err != nil {
-		return nil, err
+		return &QueryResult{
+			Err: err,
+		}
 	}
 	// s.db 是我们定义的 DB
 	// s.db.db 则是 sql.DB
 	// 使用 QueryContext，从而和 GetMulti 能够复用处理结果集的代码
-	rows, err := s.db.db.QueryContext(ctx, q.SQL, q.Args...)
+	rows, err := s.db.queryContext(ctx, q.SQL, q.Args...)
 	if err != nil {
-		return nil, err
+		return &QueryResult{
+			Err: err,
+		}
 	}
 
 	if !rows.Next() {
-		return nil, ErrNoRows
+		return &QueryResult{
+			Err: ErrNoRows,
+		}
 	}
 
 	tp := new(T)
 	meta, err := s.db.r.Get(tp)
 	if err != nil {
-		return nil, err
+		return &QueryResult{
+			Err: err,
+		}
 	}
 	val := s.db.valCreator(tp, meta)
 	err = val.SetColumns(rows)
-	return tp, err
+	return &QueryResult{
+		Result: tp,
+		Err: err,
+	}
 }
 
+
 func (s *Selector[T]) GetMulti(ctx context.Context) (res []*T, err error) {
+	//var db sql.DB
+	//q, err := s.Build()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//rows, err := db.QueryContext(ctx, q.SQL, q.Args...)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//tp := new(T)
+	//meta, err := s.db.r.Get(tp)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//val := s.db.valCreator(tp, meta)
+	//for rows.Next() {
+	//	tp = new(T)
+	//	err = val.SetColumns(rows)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	res = append(res, tp)
+	//}
+	//return
+	
+	handler := s.getMultiHandler
+	mdls := s.db.mdls
+	for i:=len(mdls)-1;i>=0;i-- {
+		handler = mdls[i](handler)
+	}
+	qc := &QueryContext{
+		Builder: s,
+		Type: "SELECT",
+	}
+	qr := handler(ctx, qc)
+	
+	return qr.Result.([]*T), qr.Err
+}
+
+var _ HandleFunc = (&Selector[any]{}).getMultiHandler
+
+// 将 GetMulti 调用作为 middleware 最后一级调用
+func (s *Selector[T]) getMultiHandler(ctx context.Context, qc *QueryContext) *QueryResult {
 	var db sql.DB
+	var res []*T
 	q, err := s.Build()
 	if err != nil {
-		return nil, err
+		return &QueryResult{
+			Err: err,
+		}
 	}
 	rows, err := db.QueryContext(ctx, q.SQL, q.Args...)
 	if err != nil {
-		return nil, err
+		return &QueryResult{
+			Err: err,
+		}
 	}
 
 	tp := new(T)
 	meta, err := s.db.r.Get(tp)
 	if err != nil {
-		return nil, err
+		return &QueryResult{
+			Err: err,
+		}
 	}
 	val := s.db.valCreator(tp, meta)
 	for rows.Next() {
 		tp = new(T)
 		err = val.SetColumns(rows)
 		if err != nil {
-			return nil, err
+			return &QueryResult{
+				Err: err,
+			}
 		}
 		res = append(res, tp)
 	}
-	return
+	return &QueryResult{
+		Result: res,
+		Err: err,
+	}
 }
+
+
 
 // NewSelector 构造 Selector
 func NewSelector[T any](db *DB) *Selector[T] {
