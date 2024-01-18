@@ -1,8 +1,8 @@
-package LORM
+package lorm
 
 import (
-	"LORM/internal/errs"
-	"LORM/internal/valuer"
+	"github.com/Ai-feier/lorm/internal/errs"
+	"github.com/Ai-feier/lorm/internal/valuer"
 	"context"
 	"database/sql"
 	"errors"

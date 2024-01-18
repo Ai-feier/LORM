@@ -1,7 +1,7 @@
-package LORM
+package lorm
 
 import (
-	"LORM/model"
+	"github.com/Ai-feier/lorm/model"
 	"context"
 )
 

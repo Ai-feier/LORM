@@ -1,7 +1,7 @@
-package LORM
+package lorm
 
 import (
-	"LORM/internal/errs"
+	"github.com/Ai-feier/lorm/internal/errs"
 	"database/sql"
 	"github.com/stretchr/testify/assert"
 	"testing"

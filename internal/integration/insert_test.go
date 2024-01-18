@@ -3,8 +3,8 @@
 package integration
 
 import (
-	orm "LORM"
-	"LORM/internal/test"
+	orm "github.com/Ai-feier/lorm"
+	"github.com/Ai-feier/lorm/internal/test"
 	"context"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"

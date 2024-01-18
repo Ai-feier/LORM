@@ -1,4 +1,4 @@
-package LORM
+package lorm
 
 type Column struct {
 	name  string
