@@ -1,8 +1,8 @@
-package LORM
+package lorm
 
 import (
-	"LORM/internal/errs"
 	"context"
+	"github.com/Ai-feier/lorm/internal/errs"
 )
 
 type Updater[T any] struct {
@@ -74,12 +74,37 @@ func (u *Updater[T]) Build() (*Query, error) {
 }
 
 func (u *Updater[T]) Exec(ctx context.Context) Result {
+	//q, err := u.Build()
+	//if err != nil {
+	//	return Result{err: err}
+	//}
+	//res, err := u.db.execContext(ctx, q.SQL, q.Args...)
+	//return Result{res: res, err: err}
+
+	handler := u.execHandler
+	mdls := u.db.mdls
+	for i:=len(mdls)-1;i>=0;i-- {
+		handler = mdls[i](handler)
+	}
+	qc := &QueryContext{
+		Builder: u,
+		Type: "DELETE",
+	}
+	qr := handler(ctx, qc)
+	return qr.Result.(Result)
+}
+
+func (u *Updater[T]) execHandler(ctx context.Context, qc *QueryContext) *QueryResult {
 	q, err := u.Build()
 	if err != nil {
-		return Result{err: err}
+		return &QueryResult{
+			Result: Result{err: err},
+		}
 	}
 	res, err := u.db.execContext(ctx, q.SQL, q.Args...)
-	return Result{res: res, err: err}
+	return &QueryResult{
+		Result: Result{res: res, err: err},
+	}
 }
 
 func (u *Updater[T]) Set(assigns ...Assignable) *Updater[T] {

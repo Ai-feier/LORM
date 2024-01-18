@@ -1,4 +1,4 @@
-package LORM
+package lorm
 
 import (
 	"context"
@@ -62,10 +62,35 @@ func (d *Deleter[T]) Where(predicates ...Predicate) *Deleter[T] {
 }
 
 func (d *Deleter[T]) Exec(ctx context.Context) Result {
+	//query, err := d.Build()
+	//if err != nil {
+	//	return Result{err: err}
+	//}
+	//res, err := d.db.execContext(ctx, query.SQL, d.args...)
+	//return Result{res: res, err: err}
+	
+	handler := d.execHandler
+	mdls := d.db.mdls
+	for i:=len(mdls)-1;i>=0;i-- {
+		handler = mdls[i](handler)
+	}
+	qc := &QueryContext{
+		Builder: d,
+		Type: "DELETE",
+	}
+	qr := handler(ctx, qc)
+	return qr.Result.(Result)
+}
+
+func (d *Deleter[T]) execHandler(ctx context.Context, qc *QueryContext) *QueryResult {
 	query, err := d.Build()
 	if err != nil {
-		return Result{err: err}
+		return &QueryResult{
+			Result: Result{err: err},
+		}
 	}
 	res, err := d.db.execContext(ctx, query.SQL, d.args...)
-	return Result{res: res, err: err}
+	return &QueryResult{
+		Result: Result{res: res, err: err},
+	}
 }

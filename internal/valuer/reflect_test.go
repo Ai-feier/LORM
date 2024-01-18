@@ -1,9 +1,9 @@
 package valuer
 
 import (
-	"LORM/internal/errs"
-	"LORM/internal/test"
-	"LORM/model"
+	"github.com/Ai-feier/lorm/internal/errs"
+	"github.com/Ai-feier/lorm/internal/test"
+	"github.com/Ai-feier/lorm/model"
 	"database/sql/driver"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"

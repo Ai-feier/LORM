@@ -1,7 +1,7 @@
 package model
 
 import (
-	"LORM/internal/errs"
+	"github.com/Ai-feier/lorm/internal/errs"
 	"database/sql"
 	"errors"
 	"github.com/stretchr/testify/assert"

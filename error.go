@@ -1,6 +1,6 @@
-package LORM
+package lorm
 
-import "LORM/internal/errs"
+import "github.com/Ai-feier/lorm/internal/errs"
 
 // 将内部的 sentinel error 暴露出去
 var (

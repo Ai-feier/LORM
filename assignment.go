@@ -1,4 +1,4 @@
-package LORM
+package lorm
 
 // Assignable 标记接口，
 // 实现该接口意味着可以用于赋值语句，

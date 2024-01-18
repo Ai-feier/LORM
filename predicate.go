@@ -1,4 +1,4 @@
-package LORM
+package lorm
 
 // op 代表操作符
 type op string

@@ -1,4 +1,4 @@
-package LORM
+package lorm
 
 // Aggregate 代表聚合函数，例如 AVG, MAX, MIN 等
 type Aggregate struct {

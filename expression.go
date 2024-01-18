@@ -1,4 +1,4 @@
-package LORM
+package lorm
 
 // RawExpr 原生 sql 语句
 type RawExpr struct {

@@ -1,8 +1,8 @@
 package valuer
 
 import (
-	"LORM/internal/errs"
-	"LORM/model"
+	"github.com/Ai-feier/lorm/internal/errs"
+	"github.com/Ai-feier/lorm/model"
 	"database/sql"
 	"reflect"
 )

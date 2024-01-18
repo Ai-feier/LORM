@@ -1,7 +1,7 @@
 package valuer
 
 import (
-	"LORM/model"
+	"github.com/Ai-feier/lorm/model"
 	"database/sql"
 )
 

@@ -1,6 +1,6 @@
-package LORM
+package lorm
 
-import "LORM/internal/errs"
+import "github.com/Ai-feier/lorm/internal/errs"
 
 var (
 	MySQL   Dialect = &mysqlDialect{}

@@ -1,7 +1,7 @@
 package integration
 
 import (
-	orm "LORM"
+	orm "github.com/Ai-feier/lorm"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

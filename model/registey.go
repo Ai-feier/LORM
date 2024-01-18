@@ -1,7 +1,7 @@
 package model
 
 import (
-	"LORM/internal/errs"
+	"github.com/Ai-feier/lorm/internal/errs"
 	"reflect"
 	"strings"
 	"sync"

@@ -1,7 +1,7 @@
 package sqllog
 
 import (
-	orm "LORM"
+	orm "github.com/Ai-feier/lorm"
 	"context"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"

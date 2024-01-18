@@ -1,4 +1,4 @@
-module LORM
+module github.com/Ai-feier/lorm
 
 go 1.20
 
