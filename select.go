@@ -1,9 +1,9 @@
 package lorm
 
 import (
-	"github.com/Ai-feier/lorm/internal/errs"
 	"context"
 	"database/sql"
+	"github.com/Ai-feier/lorm/internal/errs"
 )
 
 // Selector 用于构造 SELECT 语句
@@ -199,6 +199,7 @@ func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	qc := &QueryContext{
 		Builder: s,
 		Type: "SELECT",
+		Model: s.model,
 	}
 	res := handler(ctx, qc)
 	if res.Result != nil {
@@ -275,7 +276,7 @@ func (s *Selector[T]) GetMulti(ctx context.Context) (res []*T, err error) {
 	//	res = append(res, tp)
 	//}
 	//return
-	
+
 	handler := s.getMultiHandler
 	mdls := s.db.mdls
 	for i:=len(mdls)-1;i>=0;i-- {
@@ -284,9 +285,10 @@ func (s *Selector[T]) GetMulti(ctx context.Context) (res []*T, err error) {
 	qc := &QueryContext{
 		Builder: s,
 		Type: "SELECT",
+		Model: s.model,
 	}
 	qr := handler(ctx, qc)
-	
+
 	return qr.Result.([]*T), qr.Err
 }
 

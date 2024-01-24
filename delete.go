@@ -68,7 +68,7 @@ func (d *Deleter[T]) Exec(ctx context.Context) Result {
 	//}
 	//res, err := d.db.execContext(ctx, query.SQL, d.args...)
 	//return Result{res: res, err: err}
-	
+
 	handler := d.execHandler
 	mdls := d.db.mdls
 	for i:=len(mdls)-1;i>=0;i-- {
@@ -77,6 +77,7 @@ func (d *Deleter[T]) Exec(ctx context.Context) Result {
 	qc := &QueryContext{
 		Builder: d,
 		Type: "DELETE",
+		Model: d.model,
 	}
 	qr := handler(ctx, qc)
 	return qr.Result.(Result)
