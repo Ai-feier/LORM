@@ -9,7 +9,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-const instrumentationName = "gitee.com/geektime-geekbang/geektime-go/orm/middlewares/opentelemetry"
+const instrumentationName = "github.com/Ai-feier/lorm/middleproviderexample/opentelemetry"
 
 type MiddlewareBuilder struct {
 	Tracer trace.Tracer
