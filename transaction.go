@@ -10,11 +10,14 @@ var (
 	_ Session = &DB{}
 )
 
+// Session 抽象的数据库操作接口
+// 包含 事务 与 非事务
 type Session interface {
 	queryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
 	execContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
 
+// Tx 继承 Session 操作数据库
 type Tx struct {
 	tx *sql.Tx
 	db *DB
