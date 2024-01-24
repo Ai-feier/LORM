@@ -1,9 +1,9 @@
 package lorm
 
 import (
+	"context"
 	"github.com/Ai-feier/lorm/internal/errs"
 	"github.com/Ai-feier/lorm/model"
-	"context"
 )
 
 type UpsertBuilder[T any] struct {
@@ -55,9 +55,10 @@ func (i *Inserter[T]) Exec(ctx context.Context) Result {
 	qc := &QueryContext{
 		Builder: i,
 		Type: "INSERT",
+		Model: i.model,
 	}
 	qr := handler(ctx, qc)
-	
+
 	return qr.Result.(Result)
 }
 

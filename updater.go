@@ -89,6 +89,7 @@ func (u *Updater[T]) Exec(ctx context.Context) Result {
 	qc := &QueryContext{
 		Builder: u,
 		Type: "DELETE",
+		Model: u.model,
 	}
 	qr := handler(ctx, qc)
 	return qr.Result.(Result)
