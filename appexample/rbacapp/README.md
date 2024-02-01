@@ -8,10 +8,13 @@
 ## 系统架构
 ![](../../assets/img/system%20structure.png)
 
-## 数据库设计
+## 项目设计
+![](../../assets/img/Project%20Design.png)
+
+### 数据库设计
 ![](../../assets/img/model%20info.png)
 
-### mysql DDL
+#### mysql DDL
 ```mysql
 CREATE TABLE IF NOT EXISTS cluster_role_bindings
 (
@@ -133,7 +136,7 @@ CREATE TABLE IF NOT EXISTS users
 
 ```
 
-### postgre
+#### postgre
 1. PostgreSQL不支持auto_increment，而是使用SERIAL关键字来实现自增列。
 2. PostgreSQL使用VARCHAR代替MySQL中的LONGTEXT。
 3. PostgreSQL使用SERIAL关键字来创建自增列。
@@ -197,7 +200,7 @@ CREATE TABLE IF NOT EXISTS users
 
 ```
 
-### sqlite3
+#### sqlite3
 1. SQLite支持AUTOINCREMENT来实现自增列。
 2. SQLite使用TEXT代替MySQL中的LONGTEXT。
 3. SQLite中不需要指定列的大小，因此可以省略VARCHAR后的大小限制。
