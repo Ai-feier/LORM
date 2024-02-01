@@ -1,9 +1,9 @@
 package model
 
 import (
-	"github.com/Ai-feier/lorm/internal/errs"
 	"database/sql"
 	"errors"
+	"github.com/Ai-feier/lorm/internal/errs"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -113,7 +113,7 @@ func TestRegistry_get(t *testing.T) {
 				TableName: "test_model",
 				Fields:    []*Field{tm.IdField(), tm.FirstNameField(), tm.AgeField(), tm.LastNameField()},
 				FieldMap: map[string]*Field{
-					"Id":        tm.IdField(),
+					"ID":        tm.IdField(),
 					"FirstName": tm.FirstNameField(),
 					"Age":       tm.AgeField(),
 					"LastName":  tm.LastNameField(),
@@ -369,11 +369,11 @@ func Test_underscoreName(t *testing.T) {
 		// 可以从这里找回来
 		// 比如说过了一段时间之后
 		// 忘记了 ID 不能转化为 id
-		// 那么这个测试能帮我们确定 ID 只能转化为 i_d
+		// 那么这个测试能帮我们确定 ID 只能转化为 id
 		{
 			name:    "upper cases",
 			srcStr:  "ID",
-			wantStr: "i_d",
+			wantStr: "id",
 		},
 		{
 			name:    "use number",
@@ -415,7 +415,7 @@ func (c *EmptyTableName) TableName() string {
 }
 
 type TestModel struct {
-	Id        int64
+	ID        int64
 	FirstName string
 	Age       int8
 	LastName  *sql.NullString
@@ -425,7 +425,7 @@ func (TestModel) IdField() *Field {
 	return &Field{
 		ColName: "id",
 		Type:    reflect.TypeOf(int64(0)),
-		GoName:  "Id",
+		GoName:  "ID",
 		Offset:  0,
 		Index:   0,
 	}
