@@ -144,7 +144,7 @@ func underscoreName(tableName string) string {
 	var buf []byte
 	for i, v := range tableName {
 		if unicode.IsUpper(v) {
-			if i != 0 {
+			if i != 0 && tableName[i-1:i+1] != "ID" {
 				buf = append(buf, '_')
 			}
 			buf = append(buf, byte(unicode.ToLower(v)))
