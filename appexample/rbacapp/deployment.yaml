@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-dpl
+  labels:
+    app: demo-dpl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-dpl
+  template:
+    metadata:
+      name: demo-dpl
+      labels:
+        app: demo-dpl
+    spec:
+      containers:
+        - name: demo-dpl
+          image: registry.ap-northeast-1.aliyuncs.com/mkt-public/demoapp:v5
+          imagePullPolicy: IfNotPresent
+          tty: true
+          command:
+            - bash
+            - -c
+            - "/app/main"
+          env:
+            - name: config_path
+              valueFrom:
+                configMapKeyRef:
+                  key: config_path
+                  name: rbacapp
+          volumeMounts:
+            - mountPath: /app/config/
+              name: config
+      restartPolicy: Always
+      volumes:
+        - name: config
+          configMap:
+            name: rbacapp
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rbacapp
+data:
+  config_path: "/app/config"
+  config.yaml: |
+    mysql:
+      driveName: mysql
+      host: 172.28.18.117
+      port: 3306
+      database: rbacapp
+      username: root
+      password: 123456
+      charset: utf8mb4

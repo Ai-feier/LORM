@@ -1,0 +1,8 @@
+mysql:
+  driveName: mysql
+  host: 172.28.18.117
+  port: 3306
+  database: rbacapp
+  username: root
+  password: 123456
+  charset: utf8mb4
