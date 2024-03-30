@@ -17,7 +17,7 @@ func main() {
 	dao.Migrate()
 
 	router := router.NewRouter()
-	http.ListenAndServe("localhost:8080", router)
+	http.ListenAndServe("192.168.1.100:8080", router)
 
 	//ctx := context.Background()
 	//userdao := dao.NewUserDao(ctx)
