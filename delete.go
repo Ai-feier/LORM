@@ -17,11 +17,15 @@ func NewDeleter[T any](db *DB) *Deleter[T] {
 		builder: builder{
 			quoter:  db.dialect.quoter(),
 			dialect: db.dialect,
+			r: db.r,
 		},
 	}
 }
 
 func (d *Deleter[T]) Build() (*Query, error) {
+	defer func() {
+		d.sb.Reset()
+	}()
 	var (
 		t   T
 		err error

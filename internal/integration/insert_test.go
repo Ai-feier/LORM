@@ -3,9 +3,9 @@
 package integration
 
 import (
+	"context"
 	orm "github.com/Ai-feier/lorm"
 	"github.com/Ai-feier/lorm/internal/test"
-	"context"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func TestMySQLInsert(t *testing.T) {
 	suite.Run(t, &InsertSuite{
 		Suite{
 			driver: "mysql",
-			dsn:    "root:root@tcp(localhost:13306)/integration_test",
+			dsn:    "root:123456@tcp(172.28.18.117:3306)/rbacapp?charset=utf8mb4&parseTime=true",
 		},
 	})
 }

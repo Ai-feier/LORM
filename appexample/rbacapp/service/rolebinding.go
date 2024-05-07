@@ -14,7 +14,7 @@ func NewRoleBindingSvc() *RoleBindingSvc {
 	return &RoleBindingSvc{}
 }
 
-func (r *RoleBindingSvc) CreateRoleBinding(ctx context.Context, rb *model.RoleBinding, role *model.Role) (err error){
+func (r *RoleBindingSvc) CreateRoleBinding(ctx context.Context, rb *model.RoleBindings, role *model.Roles) (err error){
 	if role.Namespace != rb.Namespace {
 		return fmt.Errorf("不属于同一 namespace 将不建立 namespace")
 	}
@@ -27,7 +27,7 @@ func (r *RoleBindingSvc) CreateRoleBinding(ctx context.Context, rb *model.RoleBi
 	return rbDao.CreateRoleBinding(rb)
 }
 
-func (r *RoleBindingSvc) DeleteRoleBinding(ctx context.Context, rb *model.RoleBinding) error {
+func (r *RoleBindingSvc) DeleteRoleBinding(ctx context.Context, rb *model.RoleBindings) error {
 	rbDao := dao.NewRoleBindingDao(ctx)
 	return rbDao.DeleteRoleBinding(rb)
 }

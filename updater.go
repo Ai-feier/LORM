@@ -18,12 +18,16 @@ func NewUpdater[T any](db *DB) *Updater[T] {
 		builder: builder{
 			dialect: db.dialect,
 			quoter:  db.dialect.quoter(),
+			r: db.r,
 		},
 		db: db,
 	}
 }
 
 func (u *Updater[T]) Build() (*Query, error) {
+	defer func() {
+		u.sb.Reset()
+	}()
 	if len(u.assigns) == 0 {
 		return nil, errs.ErrNoUpdatedColumns
 	}
@@ -43,7 +47,7 @@ func (u *Updater[T]) Build() (*Query, error) {
 		}
 		switch assign := a.(type) {
 		case Column:
-			if err = u.buildColumn(assign.name); err != nil {
+			if err = u.buildColumn(assign.table, assign.name); err != nil {
 				return nil, err
 			}
 			u.sb.WriteString("=?")
@@ -124,7 +128,7 @@ func (u *Updater[T]) Where(ps ...Predicate) *Updater[T] {
 }
 
 func (u *Updater[T]) buildAssignment(assign Assignment) error {
-	if err := u.buildColumn(assign.column); err != nil {
+	if err := u.buildColumn(nil, assign.column); err != nil {
 		return err
 	}
 	u.sb.WriteByte('=')

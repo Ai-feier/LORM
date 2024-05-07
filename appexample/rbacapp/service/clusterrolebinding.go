@@ -13,8 +13,8 @@ func NewClusterRoleBindingSvc() *ClusterRoleBindingSvc {
 	return &ClusterRoleBindingSvc{}
 }
 
-func (c *ClusterRoleBindingSvc) CreateClusterRoleBinding(ctx context.Context, name, users string, cr *model.ClusterRole) (err error){
-	crb := &model.ClusterRoleBinding{
+func (c *ClusterRoleBindingSvc) CreateClusterRoleBinding(ctx context.Context, name, users string, cr *model.ClusterRoles) (err error){
+	crb := &model.ClusterRoleBindings{
 		RoleID: cr.ID,
 		Users: users,
 		Name: name,

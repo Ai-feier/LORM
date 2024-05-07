@@ -3,6 +3,7 @@ module github.com/Ai-feier/rbacapp
 go 1.20
 
 require (
+	github.com/Ai-feier/lorm v0.0.0-20240330071409-286cd23475bc
 	github.com/gin-gonic/gin v1.9.1
 	github.com/prometheus/client_golang v1.19.0
 	github.com/sirupsen/logrus v1.9.3

@@ -14,7 +14,7 @@ func NewUserSvc() *UserSvc {
 	return &UserSvc{}
 }
 
-func (s *UserSvc) Login(ctx context.Context, username, password string) (user *model.User, err error){
+func (s *UserSvc) Login(ctx context.Context, username, password string) (user *model.Users, err error){
 	userDao := dao.NewUserDao(ctx)
 	user, err = userDao.FindByNameAndPass(username, password)
 	if err != nil {
@@ -23,7 +23,7 @@ func (s *UserSvc) Login(ctx context.Context, username, password string) (user *m
 	return
 }
 
-func (s *UserSvc) Registry(ctx context.Context, username, password string) (user *model.User, err error) {
+func (s *UserSvc) Registry(ctx context.Context, username, password string) (user *model.Users, err error) {
 	userDao := dao.NewUserDao(ctx)
 	//user, err = userDao.FindByName(username)
 	//if user != nil {
@@ -32,7 +32,7 @@ func (s *UserSvc) Registry(ctx context.Context, username, password string) (user
 	//if err != nil {
 	//	return nil, err
 	//}
-	user = &model.User{}
+	user = &model.Users{}
 	user.UserName = username
 	user.Password = password
 	err = userDao.CreateUser(user)

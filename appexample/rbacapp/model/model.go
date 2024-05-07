@@ -1,7 +1,7 @@
 package model
 
-// User 用户模型
-type User struct {
+// Users 用户模型
+type Users struct {
 	ID         int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	UserName   string `gorm:"not null" json:"username,omitempty"`
 	Password   string `gorm:"not null" json:"password,omitempty"`
@@ -9,15 +9,15 @@ type User struct {
 	UpdateTime int64  `gorm:"not null" json:"updateTime,omitempty"`
 }
 
-// Role 角色模型
-type Role struct {
+// Roles 角色模型
+type Roles struct {
 	ID        int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	Name      string `gorm:"not null" json:"name,omitempty"`
 	Namespace string `gorm:"not null" json:"namespace,omitempty"`
 }
 
-// RoleBinding 角色绑定模型
-type RoleBinding struct {
+// RoleBindings 角色绑定模型
+type RoleBindings struct {
 	ID        int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	Name      string `gorm:"not null" json:"name,omitempty"`
 	Namespace string `gorm:"not null" json:"namespace,omitempty"`
@@ -26,8 +26,8 @@ type RoleBinding struct {
 	RoleID int    `gorm:"not null" json:"roleID,omitempty"`
 }
 
-// RoleSubRef 角色子参考模型
-type RoleSubRef struct {
+// RoleSubRefs 角色子参考模型
+type RoleSubRefs struct {
 	ID     int `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	RoleID int `gorm:"not null" json:"roleID,omitempty"`
 	// 可有多个 verb
@@ -36,22 +36,22 @@ type RoleSubRef struct {
 	Resources string `gorm:"not null" json:"resources,omitempty"`
 }
 
-// ClusterRoleBinding 集群角色绑定模型
-type ClusterRoleBinding struct {
+// ClusterRoleBindings 集群角色绑定模型
+type ClusterRoleBindings struct {
 	ID     int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	Name   string `gorm:"not null" json:"name,omitempty"`
 	Users  string `gorm:"not null" json:"users,omitempty"`
 	RoleID int    `gorm:"not null" json:"roleID,omitempty"`
 }
 
-// ClusterRole 集群角色模型
-type ClusterRole struct {
+// ClusterRoles 集群角色模型
+type ClusterRoles struct {
 	ID   int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	Name string `gorm:"not null" json:"name,omitempty"`
 }
 
-// ClusterRoleSubRef 集群角色子参考模型
-type ClusterRoleSubRef struct {
+// ClusterRoleSubRefs 集群角色子参考模型
+type ClusterRoleSubRefs struct {
 	ID            int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	ClusterRoleID int    `gorm:"not null" json:"clusterroleID,omitempty"`
 	Verbs         string `gorm:"not null" json:"verbs,omitempty"`

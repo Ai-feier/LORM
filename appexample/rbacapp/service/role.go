@@ -17,7 +17,7 @@ func NewRoleSvc() *RoleSvc {
 	return &RoleSvc{}
 }
 
-func (r *RoleSvc) CreateRole(ctx context.Context, role *model.Role, subs ...*model.RoleSubRef) error {
+func (r *RoleSvc) CreateRole(ctx context.Context, role *model.Roles, subs ...*model.RoleSubRefs) error {
 	roleDao := dao.NewRoleDao(ctx)
 	err := roleDao.CreateRole(role)
 	if err != nil {
@@ -38,7 +38,7 @@ func (r *RoleSvc) CreateRole(ctx context.Context, role *model.Role, subs ...*mod
 	return nil
 }
 
-func (r *RoleSvc) DeleteRole(ctx context.Context, role *model.Role) error {
+func (r *RoleSvc) DeleteRole(ctx context.Context, role *model.Roles) error {
 	roleDao := dao.NewRoleDao(ctx)
 	role, err := roleDao.FindByNameAndNameSpace(role.Name, role.Namespace)
 	if role == nil {

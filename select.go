@@ -9,7 +9,7 @@ import (
 // Selector 用于构造 SELECT 语句
 type Selector[T any] struct {
 	builder
-	table   string
+	table TableReference
 	db      *DB
 	where   []Predicate
 	having  []Predicate
@@ -26,13 +26,17 @@ func (s *Selector[T]) Select(cols ...Selectable) *Selector[T] {
 }
 
 // From 指定表名，如果是空字符串，那么将会使用默认表名
-func (s *Selector[T]) From(tbl string) *Selector[T] {
+func (s *Selector[T]) From(tbl TableReference) *Selector[T] {
 	s.table = tbl
 	return s
 }
 
+
 // Build 构造 sql 查询语句, 底层调用 database.sql 查询数据库
 func (s *Selector[T]) Build() (*Query, error) {
+	defer func() {
+		s.sb.Reset()
+	}()
 	var (
 		t   T
 		err error
@@ -46,11 +50,10 @@ func (s *Selector[T]) Build() (*Query, error) {
 		return nil, err
 	}
 	s.sb.WriteString(" FROM ")
-	if s.table == "" {
-		s.quote(s.model.TableName)
-	} else {
-		s.sb.WriteString(s.table)
+	if err = s.buildTable(s.table); err != nil {
+		return nil, err
 	}
+
 
 	// 构造 WHERE
 	if len(s.where) > 0 {
@@ -127,13 +130,73 @@ func (s *Selector[T]) buildColumns() error {
 }
 
 func (s *Selector[T]) buildColumn(c Column, useAlias bool) error {
-	err := s.builder.buildColumn(c.name)
+	err := s.builder.buildColumn(c.table, c.name)
 	if err != nil {
 		return err
 	}
 	if useAlias {
 		s.buildAs(c.alias)
 	}
+	return nil
+}
+
+func (s *Selector[T]) buildTable(table TableReference) error {
+	switch tab := table.(type) {
+	case nil:
+		s.quote(s.model.TableName)
+	case Table:
+		model, err := s.db.r.Get(tab.entity)
+		if err != nil {
+			return err
+		}
+		s.quote(model.TableName)
+		if tab.alias != "" {
+			s.sb.WriteString(" AS ")
+			s.quote(tab.alias)
+		}
+	case Join:
+		return s.buildJoin(tab)
+	case Subquery:
+		return s.buildSubquery(tab, true)
+	default:
+		return errs.NewErrUnsupportedExpressionType(tab)
+	}
+	return nil
+}
+
+
+func (s *Selector[T]) buildJoin(tab Join) error {
+	s.sb.WriteByte('(')
+	if err := s.buildTable(tab.left); err != nil {
+		return err
+	}
+	s.sb.WriteString(" ")
+	s.sb.WriteString(tab.typ)
+	s.sb.WriteString(" ")
+	if err := s.buildTable(tab.right); err != nil {
+		return err
+	}
+	if len(tab.using) > 0 {
+		s.sb.WriteString(" USING (")
+		for i, col := range tab.using {
+			if i > 0 {
+				s.sb.WriteByte(',')
+			}
+			err := s.buildColumn(Column{name: col}, false)
+			if err != nil {
+				return err
+			}
+		}
+		s.sb.WriteString(")")
+	}
+	if len(tab.on) > 0 {
+		s.sb.WriteString(" ON ")
+		err := s.buildPredicates(tab.on)
+		if err != nil {
+			return err
+		}
+	}
+	s.sb.WriteByte(')')
 	return nil
 }
 
@@ -163,6 +226,20 @@ func (s *Selector[T]) Limit(limit int) *Selector[T] {
 	s.limit = limit
 	return s
 }
+
+func (s *Selector[T]) AsSubquery(alias string) Subquery {
+	tbl := s.table
+	if tbl == nil {
+		tbl = TableOf(new(T))
+	}
+	return Subquery {
+		s: s,
+		alias: alias,
+		table: tbl,
+		columns: s.columns,
+	}
+}
+
 
 func (s *Selector[T]) Get(ctx context.Context) (*T, error) {
 	//q, err := s.Build()
@@ -343,6 +420,7 @@ func NewSelector[T any](db *DB) *Selector[T] {
 		builder: builder{
 			dialect: db.dialect,
 			quoter:  db.dialect.quoter(),
+			r: db.r,
 		},
 		db: db,
 	}
@@ -350,5 +428,7 @@ func NewSelector[T any](db *DB) *Selector[T] {
 
 // Selectable select 语句中 colume, rawexpr, aggregate 的抽象
 type Selectable interface {
-	selectable()
+	selectedAlias() string
+	fieldName() string
+	target() TableReference
 }

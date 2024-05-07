@@ -14,14 +14,14 @@ import (
 func main() {
 	config.InitConfig()
 	dao.InitDB()
-	dao.Migrate()
+	//dao.Migrate()
 
 	router := router.NewRouter()
 	http.ListenAndServe("192.168.1.100:8080", router)
 
 	//ctx := context.Background()
 	//userdao := dao.NewUserDao(ctx)
-	//user := &model.User{
+	//user := &model.Users{
 	//	ID: 1,
 	//	UserName:   "test",
 	//	Password:   "123456",
@@ -43,13 +43,13 @@ func TestClusterRoleCreate() {
 	testCases := []struct{
 		name string
 		clustername string
-		subs []*model.ClusterRoleSubRef
+		subs []*model.ClusterRoleSubRefs
 		err error
 	} {
 		{
 			name: "cr1",
 			clustername: "cr1",
-			subs: []*model.ClusterRoleSubRef{
+			subs: []*model.ClusterRoleSubRefs{
 				{
 					Verbs: "get,create",
 					Resources: "pods,deploymentes",
@@ -65,7 +65,7 @@ func TestClusterRoleCreate() {
 	ctx := context.Background()
 	crSvc := service.NewClusterRoleSvc()
 	for _, tc := range testCases {
-		cr := &model.ClusterRole{Name: tc.name}
+		cr := &model.ClusterRoles{Name: tc.name}
 		err := crSvc.CreateClusterRole(ctx, cr, tc.subs...)
 		if err != nil {
 			fmt.Println(err)
@@ -78,13 +78,13 @@ func TestClusterRoleDelete() {
 	testCases := []struct{
 		name string
 		clustername string
-		subs []*model.ClusterRoleSubRef
+		subs []*model.ClusterRoleSubRefs
 		err error
 	} {
 		{
 			name: "cr1",
 			clustername: "cr1",
-			subs: []*model.ClusterRoleSubRef{
+			subs: []*model.ClusterRoleSubRefs{
 				{
 					Verbs: "get,create",
 					Resources: "pods,deploymentes",
@@ -114,7 +114,7 @@ func TestClusterRoleBindingCreate() {
 		clustername string
 		crbName string
 		crbUser string
-		subs []*model.ClusterRoleSubRef
+		subs []*model.ClusterRoleSubRefs
 		err error
 	} {
 		{
@@ -122,7 +122,7 @@ func TestClusterRoleBindingCreate() {
 			clustername: "cr1",
 			crbName: "crb1",
 			crbUser: "test1,test2",
-			subs: []*model.ClusterRoleSubRef{
+			subs: []*model.ClusterRoleSubRefs{
 				{
 					Verbs: "get,create",
 					Resources: "pods,deploymentes",
@@ -138,7 +138,7 @@ func TestClusterRoleBindingCreate() {
 	ctx := context.Background()
 	crSvc := service.NewClusterRoleSvc()
 	for _, tc := range testCases {
-		cr := &model.ClusterRole{Name: tc.name}
+		cr := &model.ClusterRoles{Name: tc.name}
 		err := crSvc.CreateClusterRole(ctx, cr, tc.subs...)
 		if err != nil {
 			fmt.Println(err)
@@ -176,11 +176,11 @@ func TestRoleCreate() {
 	ctx := context.Background()
 	roleSvc := service.NewRoleSvc()
 
-	role := &model.Role{
+	role := &model.Roles{
 		Name:      "role2",
 		Namespace: "ns1",
 	}
-	rolesubs := []*model.RoleSubRef{
+	rolesubs := []*model.RoleSubRefs{
 		{
 			Verbs:     "get,list",
 			Resources: "pods",
@@ -200,7 +200,7 @@ func TestRoleDelete() {
 	ctx := context.Background()
 	roleSvc := service.NewRoleSvc()
 
-	role := &model.Role{
+	role := &model.Roles{
 		Name:      "role2",
 		Namespace: "ns1",
 	}
@@ -214,11 +214,11 @@ func TestRoleBindingCreate() {
 	ctx := context.Background()
 	roleSvc := service.NewRoleSvc()
 
-	role := &model.Role{
+	role := &model.Roles{
 		Name:      "role2",
 		Namespace: "ns1",
 	}
-	rolesubs := []*model.RoleSubRef{
+	rolesubs := []*model.RoleSubRefs{
 		{
 			Verbs:     "get,list",
 			Resources: "pods",
@@ -234,7 +234,7 @@ func TestRoleBindingCreate() {
 	}
 
 	rbSvc := service.NewRoleBindingSvc()
-	rb := &model.RoleBinding{
+	rb := &model.RoleBindings{
 		Name:      "rb2",
 		Namespace: "ns1",
 		Users:     "user1,user2",
@@ -246,7 +246,7 @@ func TestRoleBindingCreate() {
 }
 
 func TestRoleBindingDelete() {
-	rb := &model.RoleBinding{
+	rb := &model.RoleBindings{
 		Name:      "rb2",
 		Namespace: "ns1",
 		Users:     "user1,user2",

@@ -6,7 +6,17 @@ type RawExpr struct {
 	args []any
 }
 
-func (r RawExpr) selectable() {}
+func (r RawExpr) selectedAlias() string {
+	return ""
+}
+
+func (r RawExpr) fieldName() string {
+	return ""
+}
+
+func (r RawExpr) target() TableReference {
+	return nil
+}
 
 func (r RawExpr) expr() {}
 
@@ -54,3 +64,32 @@ func (m MathExpr) Multi(val interface{}) MathExpr {
 }
 
 func (m MathExpr) expr() {}
+
+type SubqueryExpr struct {
+	s Subquery
+	// 谓词，ALL，ANY 或者 SOME
+	pred string
+}
+
+func (SubqueryExpr) expr() {}
+
+func Any(sub Subquery) SubqueryExpr {
+	return SubqueryExpr{
+		s: sub,
+		pred: "ANY",
+	}
+}
+
+func All(sub Subquery) SubqueryExpr {
+	return SubqueryExpr{
+		s: sub,
+		pred: "ALL",
+	}
+}
+
+func Some(sub Subquery) SubqueryExpr {
+	return SubqueryExpr{
+		s: sub,
+		pred: "SOME",
+	}
+}

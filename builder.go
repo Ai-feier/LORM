@@ -15,17 +15,70 @@ type builder struct {
 	model *model.Model
 	// 方言抽象
 	dialect Dialect
+	r model.Registry
 	quoter  byte
 }
 
 // buildColumn 构造列
-func (b *builder) buildColumn(fd string) error {
-	meta, ok := b.model.FieldMap[fd]
-	if !ok {
-		return errs.NewErrUnknownField(fd)
+// 如果 table 没有指定，我们就用 model 来判断列是否存在
+func (b *builder) buildColumn(table TableReference, fd string) error {
+	var alias string
+	if table != nil {
+		alias = table.tableAlias()
 	}
-	b.quote(meta.ColName)
+	if alias != "" {
+		b.quote(alias)
+		b.sb.WriteByte('.')
+	}
+	colName, err := b.colName(table, fd)
+	if err != nil {
+		return err
+	}
+	b.quote(colName)
 	return nil
+}
+
+func (b *builder) colName(table TableReference, fd string) (string, error) {
+	switch tab := table.(type) {
+	case nil:
+		fdMeta, ok := b.model.FieldMap[fd]
+		if !ok {
+			return "", errs.NewErrUnknownField(fd)
+		}
+		return fdMeta.ColName, nil
+	case Table:
+		m, err := b.r.Get(tab.entity)
+		if err != nil {
+			return "", err
+		}
+		fdMeta, ok := m.FieldMap[fd]
+		if !ok {
+			return "", errs.NewErrUnknownField(fd)
+		}
+		return fdMeta.ColName, nil
+	case Join:
+		colName, err := b.colName(tab.left, fd)
+		if err != nil {
+			return colName, nil
+		}
+		return b.colName(tab.right, fd)
+	case Subquery:
+		if len(tab.columns) > 0 {
+			for _, c := range tab.columns {
+				if c.selectedAlias() == fd {
+					return fd, nil
+				}
+
+				if c.fieldName() == fd {
+					return b.colName(c.target(), fd)
+				}
+			}
+			return "", errs.NewErrUnknownField(fd)
+		}
+		return b.colName(tab.table, fd)
+	default:
+		return "", errs.NewErrUnsupportedExpressionType(tab)
+	}
 }
 
 // 构造方言的quote
@@ -69,7 +122,7 @@ func (b *builder) buildExpression(e Expression) error {
 	}
 	switch exp := e.(type) {
 	case Column:
-		return b.buildColumn(exp.name)
+		return b.buildColumn(exp.table, exp.name)
 	case Aggregate:
 		return b.buildAggregate(exp, false)
 	case value:
@@ -86,6 +139,12 @@ func (b *builder) buildExpression(e Expression) error {
 		return b.buildBinaryExpr(binaryExpr(exp))
 	case binaryExpr:
 		return b.buildBinaryExpr(exp)
+	case SubqueryExpr:
+		b.sb.WriteString(exp.pred)
+		b.sb.WriteByte(' ')
+		return b.buildSubquery(exp.s, false)
+	case Subquery:
+		return b.buildSubquery(exp, false)
 	default:
 		return errs.NewErrUnsupportedExpressionType(exp)
 	}
@@ -142,7 +201,7 @@ func (b *builder) buildSubExpr(subExpr Expression) error {
 func (b *builder) buildAggregate(a Aggregate, useAlias bool) error {
 	b.sb.WriteString(a.fn)
 	b.sb.WriteByte('(')
-	err := b.buildColumn(a.arg)
+	err := b.buildColumn(a.table, a.arg)
 	if err != nil {
 		return err
 	}
@@ -160,3 +219,23 @@ func (b *builder) buildAs(alias string) {
 		b.quote(alias)
 	}
 }
+
+
+func (b *builder) buildSubquery(tab Subquery, useAlias bool) error {
+	q, err := tab.s.Build()
+	if err != nil {
+		return err
+	}
+	b.sb.WriteByte('(')
+	b.sb.WriteString(q.SQL[:len(q.SQL)-1])
+	if len(q.Args) > 0 {
+		b.addArgs(q.Args...)
+	}
+	b.sb.WriteByte(')')
+	if useAlias {
+		b.sb.WriteString(" AS ")
+		b.quote(tab.alias)
+	}
+	return nil
+}
+

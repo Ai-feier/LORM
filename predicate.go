@@ -13,6 +13,8 @@ const (
 	opNOT   = "NOT"
 	opAdd   = "+"
 	opMulti = "*"
+	opExist = "EXIST"
+	opIN = "IN"
 )
 
 func (o op) String() string {
@@ -63,5 +65,12 @@ func (p Predicate) Or(right Predicate) Predicate {
 		left:  p,
 		op:    opOR,
 		right: right,
+	}
+}
+
+func Exist(sub Subquery) Predicate {
+	return Predicate{
+		op: opExist,
+		right: sub,
 	}
 }

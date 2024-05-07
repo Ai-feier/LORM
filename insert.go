@@ -81,6 +81,7 @@ func NewInserter[T any](db *DB) *Inserter[T] {
 		builder: builder{
 			dialect: db.dialect,
 			quoter:  db.dialect.quoter(),
+			r: db.r,
 		},
 	}
 }
@@ -103,6 +104,9 @@ func (i *Inserter[T]) Columns(cols ...string) *Inserter[T] {
 }
 
 func (i *Inserter[T]) Build() (*Query, error) {
+	defer func() {
+		i.sb.Reset()
+	}()
 	if len(i.values) == 0 {
 		return nil, errs.ErrInsertZeroRow
 	}

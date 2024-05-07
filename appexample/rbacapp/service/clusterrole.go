@@ -14,7 +14,7 @@ func NewClusterRoleSvc() *ClusterRoleSvc {
 	return &ClusterRoleSvc{}
 }
 
-func (c *ClusterRoleSvc) CreateClusterRole(ctx context.Context, cr *model.ClusterRole, subs ...*model.ClusterRoleSubRef) (err error)  {
+func (c *ClusterRoleSvc) CreateClusterRole(ctx context.Context, cr *model.ClusterRoles, subs ...*model.ClusterRoleSubRefs) (err error)  {
 	crDao := dao.NewClusterRoleDao(ctx)
 	//cr, err = crDao.FindByName(name)
 	//// 已存在

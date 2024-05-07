@@ -3,8 +3,8 @@ package lorm
 import "github.com/Ai-feier/lorm/internal/errs"
 
 var (
-	MySQL   Dialect = &mysqlDialect{}
-	SQLite3 Dialect = &sqlite3Dialect{}
+	MySQL   Dialect = &MysqlDialect{}
+	SQLite3 Dialect = &Sqlite3Dialect{}
 )
 
 type Dialect interface {
@@ -27,15 +27,15 @@ func (s *standardSQL) buildUpsert(b *builder,
 	panic("implement me")
 }
 
-type mysqlDialect struct {
+type MysqlDialect struct {
 	standardSQL
 }
 
-func (m *mysqlDialect) quoter() byte {
+func (m *MysqlDialect) quoter() byte {
 	return '`'
 }
 
-func (m *mysqlDialect) buildUpsert(b *builder,
+func (m *MysqlDialect) buildUpsert(b *builder,
 	odk *Upsert) error {
 	b.sb.WriteString(" ON DUPLICATE KEY UPDATE ")
 	for idx, a := range odk.assigns {
@@ -53,7 +53,7 @@ func (m *mysqlDialect) buildUpsert(b *builder,
 			b.quote(fd.ColName)
 			b.sb.WriteByte(')')
 		case Assignment:
-			err := b.buildColumn(assign.column)
+			err := b.buildColumn(nil, assign.column)
 			if err != nil {
 				return err
 			}
@@ -66,15 +66,15 @@ func (m *mysqlDialect) buildUpsert(b *builder,
 	return nil
 }
 
-type sqlite3Dialect struct {
+type Sqlite3Dialect struct {
 	standardSQL
 }
 
-func (s *sqlite3Dialect) quoter() byte {
+func (s *Sqlite3Dialect) quoter() byte {
 	return '`'
 }
 
-func (s *sqlite3Dialect) buildUpsert(b *builder,
+func (s *Sqlite3Dialect) buildUpsert(b *builder,
 	odk *Upsert) error {
 	b.sb.WriteString(" ON CONFLICT")
 	if len(odk.conflictColumns) > 0 {
@@ -83,7 +83,7 @@ func (s *sqlite3Dialect) buildUpsert(b *builder,
 			if i > 0 {
 				b.sb.WriteByte(',')
 			}
-			err := b.buildColumn(col)
+			err := b.buildColumn(nil, col)
 			if err != nil {
 				return err
 			}
@@ -106,7 +106,7 @@ func (s *sqlite3Dialect) buildUpsert(b *builder,
 			b.sb.WriteString("=excluded.")
 			b.quote(fd.ColName)
 		case Assignment:
-			err := b.buildColumn(assign.column)
+			err := b.buildColumn(nil, assign.column)
 			if err != nil {
 				return err
 			}
