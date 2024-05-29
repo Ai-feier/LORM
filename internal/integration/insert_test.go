@@ -22,7 +22,7 @@ func TestMySQLInsert(t *testing.T) {
 	suite.Run(t, &InsertSuite{
 		Suite{
 			driver: "mysql",
-			dsn:    "root:123456@tcp(172.28.18.117:3306)/rbacapp?charset=utf8mb4&parseTime=true",
+			dsn:    "root:root@tcp(localhost:13306)/integration_test",
 		},
 	})
 }

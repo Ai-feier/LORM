@@ -40,8 +40,8 @@ type RoleSubRefs struct {
 type ClusterRoleBindings struct {
 	ID     int    `gorm:"primaryKey;autoIncrement" json:"ID,omitempty"`
 	Name   string `gorm:"not null" json:"name,omitempty"`
-	Users  string `gorm:"not null" json:"users,omitempty"`
-	RoleID int    `gorm:"not null" json:"roleID,omitempty"`
+	Users         string `gorm:"not null" json:"users,omitempty"`
+	ClusterRoleID int    `gorm:"not null" json:"roleID,omitempty"`
 }
 
 // ClusterRoles 集群角色模型

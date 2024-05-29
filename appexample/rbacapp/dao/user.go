@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-	"fmt"
 	"github.com/Ai-feier/lorm"
 	"github.com/Ai-feier/rbacapp/model"
 	"github.com/Ai-feier/rbacapp/pkg/errs"
@@ -18,7 +17,6 @@ import (
 type UserDao struct {
 	db *lorm.DB
 
-	sl lorm.Selector[model.Users]
 }
 
 func NewUserDao(ctx context.Context) *UserDao {
@@ -91,7 +89,8 @@ func (u *UserDao) ListUser() (users []*model.Users, err error) {
 func (u *UserDao) FindByName(name string) (user *model.Users, err error) {
 	//err = u.db.Model(&model.Users{}).Where("user_name = ?", name).Find(&user).Error
 	//return
-	return u.sl.Where(lorm.C("Name").EQ(name)).Get(context.Background())
+	//return u.sl.Where(lorm.C("Name").EQ(name)).Get(context.Background())
+	return lorm.NewSelector[model.Users](u.db).Where(lorm.C("Name").EQ(name)).Get(context.Background())
 }
 
 func (u *UserDao) FindByNameAndPass(name, pass string) (user *model.Users, err error) {
@@ -102,9 +101,9 @@ func (u *UserDao) FindByNameAndPass(name, pass string) (user *model.Users, err e
 	//}
 	//return
 
-	fmt.Println(u.sl.Where(lorm.C("Name").EQ(name), lorm.C("Password").EQ(pass)).Build())
+	//fmt.Println(u.sl.Where(lorm.C("Name").EQ(name), lorm.C("Password").EQ(pass)).Build())
 
-	return u.sl.Where(lorm.C("UserName").EQ(name), lorm.C("Password").EQ(pass)).Get(context.Background())
+	return lorm.NewSelector[model.Users](u.db).Where(lorm.C("UserName").EQ(name), lorm.C("Password").EQ(pass)).Get(context.Background())
 }
 
 

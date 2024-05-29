@@ -280,10 +280,13 @@ func TestSelector_SubqueryAndJoin(t *testing.T) {
 			q: func() QueryBuilder {
 				sub1 := NewSelector[OrderDetail](db).AsSubquery("sub1")
 				sub2 := NewSelector[OrderDetail](db).AsSubquery("sub2")
-				return NewSelector[Order](db).From(sub1.RightJoin(sub2).Using("Id")).Where()
+				return NewSelector[Order](db).From(sub1.RightJoin(sub2).Using("Id")).Where(C("UsingCol1").
+				GT(21).And(C("UsingCol2").LT(30)))
 			}(),
 			wantQuery: &Query{
-				SQL: "SELECT * FROM ((SELECT * FROM `order_detail`) AS `sub1` RIGHT JOIN (SELECT * FROM `order_detail`) AS `sub2` USING (`id`));",
+				SQL: "SELECT * FROM ((SELECT * FROM `order_detail`) AS `sub1` RIGHT JOIN (SELECT * FROM `order_detail`) " +
+					"AS `sub2` USING (`id`)) WHERE (`using_col1` > ?) AND (`using_col2` < ?);",
+				Args: []any{21,30},
 			},
 		},
 		{

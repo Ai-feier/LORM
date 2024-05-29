@@ -15,9 +15,9 @@ func NewClusterRoleBindingSvc() *ClusterRoleBindingSvc {
 
 func (c *ClusterRoleBindingSvc) CreateClusterRoleBinding(ctx context.Context, name, users string, cr *model.ClusterRoles) (err error){
 	crb := &model.ClusterRoleBindings{
-		RoleID: cr.ID,
-		Users: users,
-		Name: name,
+		ClusterRoleID: cr.ID,
+		Users:         users,
+		Name:          name,
 	}
 
 	// TODO: 验证 role 是否存在
